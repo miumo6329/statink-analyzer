@@ -7,6 +7,7 @@ import seaborn as sns
 from scipy.stats import boxcox, zscore
 from utils import generate_gradient, orthogonal_projection
 from weapon_info import weapon_dict
+from enums import Lobby, Mode
 
 
 DIR_BATTLE_RESULTS = 'battle-results-csv\\'
@@ -30,33 +31,34 @@ def load_battle_result(dt_start, dt_end):
     return df_result
 
 
-def count_xmatch_rule(df, save_dir):
-    rules = ['area', 'yagura', 'hoko', 'asari']
-    rules_label = ['エリア', 'ヤグラ', 'ホコ', 'アサリ']
-    df_xmatch = df[df['lobby'] == 'xmatch']
+def count_rules(df, lobby, save_dir):
+    df_temp = df[df['lobby'] == lobby.name]
+    rules = lobby.get_rules()
+    rules_label = [rule.value for rule in rules]
     count = []
     for rule in rules:
-        df_rule = df_xmatch[df_xmatch['mode'] == rule]
+        df_rule = df_temp[df_temp['mode'] == rule.name]
         count.append(len(df_rule))
 
     fig, ax = plt.subplots()
     bar = ax.bar(rules_label, count, alpha=0.8)
-    # bar = ax.barh(rules_label, count)
+    # bar = ax.barh(rules_label, count, alpha=0.8)
     # ax.invert_yaxis()
     ax.bar_label(bar, labels=count)
-    plt.savefig(save_dir + 'xmatch_rule_count.png')
+    plt.savefig(save_dir + 'rule_count.png')
 
 
-def histgram_xpower(df, save_dir):
-    df_xmatch = df[df['lobby'] == 'xmatch']
-    df_xpower = df_xmatch.filter(items=['power'])
+def histogram_xpower(df, lobby, modes, save_dir):
+    df_temp = df[df['lobby'] == lobby.name]
+    # TODO: modesで指定したルールでフィルタリング
+    df_xpower = df_temp.filter(items=['power'])
 
     print(df_xpower.describe())
 
     df_xpower.hist(bins=38, alpha=0.8)
     plt.tight_layout()
     plt.xlim(1200, 3000)
-    plt.savefig(save_dir + 'xpower_histgram.png')
+    plt.savefig(save_dir + 'xpower_histogram.png')
 
 
 def preprocess_df(df):
@@ -146,9 +148,9 @@ def preprocess_df(df):
     return df_result
 
 
-def weapon_win_rate(df, save_dir):
-    df_xmatch = df[df['lobby'] == 'xmatch']
-    df_xmatch = df_xmatch[df_xmatch['mode'] == 'area']
+def weapon_win_rate(df, lobby, mode, save_dir):
+    df_xmatch = df[df['lobby'] == lobby.name]
+    df_xmatch = df_xmatch[df_xmatch['mode'] == mode.name]
     df_ = preprocess_df(df_xmatch)
 
     # ブキ毎の平均XパワーのDataFrameを作成
@@ -193,8 +195,8 @@ def weapon_win_rate(df, save_dir):
 
 
 def weapon_use_rate(df, lobby, mode, save_dir):
-    df_xmatch = df[df['lobby'] == lobby]
-    df_xmatch = df_xmatch[df_xmatch['mode'] == mode]
+    df_xmatch = df[df['lobby'] == lobby.name]
+    df_xmatch = df_xmatch[df_xmatch['mode'] == mode.name]
     df_weapon = preprocess_df(df_xmatch)
 
     # ブキ使用率のDataFrameを作成
@@ -235,9 +237,9 @@ def weapon_use_rate(df, lobby, mode, save_dir):
     return df_weapon_use_rate
 
 
-def average_xpower_per_weapon(df, save_dir):
-    df_xmatch = df[df['lobby'] == 'xmatch']
-    df_xmatch = df_xmatch[df_xmatch['mode'] == 'area']
+def average_xpower_per_weapon(df, lobby, mode, save_dir):
+    df_xmatch = df[df['lobby'] == lobby.name]
+    df_xmatch = df_xmatch[df_xmatch['mode'] == mode.name]
     df_ = preprocess_df(df_xmatch)
 
     # ブキ毎の平均XパワーのDataFrameを作成
@@ -368,26 +370,33 @@ def weapon_deviation_value(df_use_rate, df_ave_xpower, save_dir):
 
 def analyze(dt_start, dt_end, lobby, mode):
     save_dir = dt_start.strftime('%Y%m%d') + '-' + dt_end.strftime('%Y%m%d') + \
-               '-' + lobby + '-' + mode + '\\'
+               '-' + lobby.name + '-' + mode.name + '\\'
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
     df = load_battle_result(dt_start, dt_end)
 
     # 各解析グラフ作成
-    count_xmatch_rule(df, save_dir)
-    histgram_xpower(df, save_dir)
-    weapon_win_rate(df, save_dir)
+    if lobby == Lobby.xmatch or lobby == Lobby.bankara_challenge or lobby == Lobby.bankara_open:
+        count_rules(df, lobby, save_dir)
+
+    if lobby == Lobby.xmatch:
+        # TODO: modesで指定したルールでフィルタリング
+        histogram_xpower(df, lobby, [Mode.area, Mode.yagura, Mode.hoko, Mode.asari], save_dir)
+
+    df_win_rate = weapon_win_rate(df, lobby, mode, save_dir)
     df_use_rate = weapon_use_rate(df, lobby, mode, save_dir)
-    df_ave_xpower = average_xpower_per_weapon(df, save_dir)
-    weapon_deviation_value(df_use_rate, df_ave_xpower, save_dir)
+
+    if lobby == Lobby.xmatch:
+        df_ave_xpower = average_xpower_per_weapon(df, lobby, mode, save_dir)
+        weapon_deviation_value(df_use_rate, df_ave_xpower, save_dir)
 
 
 def main():
     dt_start = datetime.datetime(2023, 1, 18)
     dt_end = datetime.datetime(2023, 1, 31)
-    lobby = 'xmatch'
-    mode = 'area'
+    lobby = Lobby.xmatch
+    mode = Mode.area
     analyze(dt_start, dt_end, lobby, mode)
 
 
