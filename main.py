@@ -153,15 +153,16 @@ def weapon_win_rate(df, lobby, mode, save_dir):
     df_xmatch = df_xmatch[df_xmatch['mode'] == mode.name]
     df_ = preprocess_df(df_xmatch)
 
-    # ブキ毎の平均XパワーのDataFrameを作成
-    columns = ['key', 'weapon', 'win_rate', 'win_rate_std', 'win_rate_sem']
+    # ブキ毎の勝率のDataFrameを作成
+    columns = ['key', 'weapon', 'win_rate', 'win_rate_std', 'win_rate_sem', 'battle_count']
     df_win_rate = pd.DataFrame(columns=columns)
     for key, value in weapon_dict.items():
         df_weapon = df_[df_['weapon'] == key]
         mean = df_weapon['win'].mean() * 100  # [%]
         std = df_weapon['win'].std() * 100
         sem = df_weapon['win'].sem() * 100
-        df_temp = pd.DataFrame([[key, value, mean, std, sem]], columns=columns)
+        count = len(df_weapon)
+        df_temp = pd.DataFrame([[key, value, mean, std, sem, count]], columns=columns)
         df_win_rate = pd.concat([df_win_rate, df_temp])
 
     # 昇順にソート
@@ -191,6 +192,23 @@ def weapon_win_rate(df, lobby, mode, save_dir):
 
     plt.tight_layout()
     plt.savefig(save_dir + 'weapon_win_rate.png')
+
+    # 勝率とバトル数の関係をプロット
+    fig = plt.figure(figsize=(7, 7), dpi=300)
+    ax = fig.add_subplot(1, 1, 1)
+    ax.set_xscale("log")
+    ax.set_xlim([20, 8000])
+    ax.set_ylim([25, 65])
+    for idx, row in df_win_rate.iterrows():
+        x = row['battle_count']
+        y = row['win_rate']
+        img = plt.imread(DIR_WEAPON_IMAGES + row['key'] + '.png')
+        ab = AnnotationBbox(OffsetImage(img, zoom=0.09), (0, 0), xybox=(x, y),
+                            frameon=False, annotation_clip=False)
+        ax.add_artist(ab)
+    # plt.tight_layout()
+    plt.savefig(save_dir + 'weapon_win_rate_battle_count.png')
+
     return df_win_rate
 
 
