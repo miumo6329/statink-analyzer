@@ -1,0 +1,384 @@
+[
+    {
+        "key": "yunohana",
+        "aliases": [
+            "gorge",
+            "scorch_gorge",
+            "1"
+        ],
+        "name": {
+            "en_US": "Scorch Gorge",
+            "ja_JP": "ユノハナ大渓谷"
+        },
+        "short_name": {
+            "en_US": "Gorge",
+            "ja_JP": "ユノハナ"
+        },
+        "area": 2144,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "gonzui",
+        "aliases": [
+            "alley",
+            "eeltail_alley",
+            "2"
+        ],
+        "name": {
+            "en_US": "Eeltail Alley",
+            "ja_JP": "ゴンズイ地区"
+        },
+        "short_name": {
+            "en_US": "Alley",
+            "ja_JP": "ゴンズイ"
+        },
+        "area": 2773,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "kinmedai",
+        "aliases": [
+            "museum",
+            "museum_dalfonsino",
+            "11"
+        ],
+        "name": {
+            "en_US": "Museum d'Alfonsino",
+            "ja_JP": "キンメダイ美術館"
+        },
+        "short_name": {
+            "en_US": "Museum",
+            "ja_JP": "キンメダイ"
+        },
+        "area": 2332,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "mategai",
+        "aliases": [
+            "spillway",
+            "undertow_spillway",
+            "4",
+            "103"
+        ],
+        "name": {
+            "en_US": "Undertow Spillway",
+            "ja_JP": "マテガイ放水路"
+        },
+        "short_name": {
+            "en_US": "Spillway",
+            "ja_JP": "マテガイ"
+        },
+        "area": 2440,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "namero",
+        "aliases": [
+            "metalworks",
+            "mincemeat_metalworks",
+            "6"
+        ],
+        "name": {
+            "en_US": "Mincemeat Metalworks",
+            "ja_JP": "ナメロウ金属"
+        },
+        "short_name": {
+            "en_US": "Metalworks",
+            "ja_JP": "ナメロウ"
+        },
+        "area": 2177,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "yagara",
+        "aliases": [
+            "hagglefish_market",
+            "market",
+            "3"
+        ],
+        "name": {
+            "en_US": "Hagglefish Market",
+            "ja_JP": "ヤガラ市場"
+        },
+        "short_name": {
+            "en_US": "Market",
+            "ja_JP": "ヤガラ"
+        },
+        "area": 2631,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "masaba",
+        "aliases": [
+            "bridge",
+            "hammerhead_bridge",
+            "10"
+        ],
+        "name": {
+            "en_US": "Hammerhead Bridge",
+            "ja_JP": "マサバ海峡大橋"
+        },
+        "short_name": {
+            "en_US": "Bridge",
+            "ja_JP": "マサバ"
+        },
+        "area": 2501,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "mahimahi",
+        "aliases": [
+            "mahi_mahi_resort",
+            "resort",
+            "12"
+        ],
+        "name": {
+            "en_US": "Mahi-Mahi Resort",
+            "ja_JP": "マヒマヒリゾート＆スパ"
+        },
+        "short_name": {
+            "en_US": "Resort",
+            "ja_JP": "マヒマヒ"
+        },
+        "area": 1693,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "zatou",
+        "aliases": [
+            "makomart",
+            "mart",
+            "15"
+        ],
+        "name": {
+            "en_US": "MakoMart",
+            "ja_JP": "ザトウマーケット"
+        },
+        "short_name": {
+            "en_US": "Mart",
+            "ja_JP": "ザトウ"
+        },
+        "area": 2275,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "chozame",
+        "aliases": [
+            "shipyard",
+            "sturgeon_shipyard",
+            "14"
+        ],
+        "name": {
+            "en_US": "Sturgeon Shipyard",
+            "ja_JP": "チョウザメ造船"
+        },
+        "short_name": {
+            "en_US": "Shipyard",
+            "ja_JP": "チョウザメ"
+        },
+        "area": 2880,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "amabi",
+        "aliases": [
+            "academy",
+            "ama",
+            "inkblot_art_academy",
+            "13",
+            "102"
+        ],
+        "name": {
+            "en_US": "Inkblot Art Academy",
+            "ja_JP": "海女美術大学"
+        },
+        "short_name": {
+            "en_US": "Academy",
+            "ja_JP": "海女美"
+        },
+        "area": 2591,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "sumeshi",
+        "aliases": [
+            "wahoo_world",
+            "world",
+            "16",
+            "100"
+        ],
+        "name": {
+            "en_US": "Wahoo World",
+            "ja_JP": "スメーシーワールド"
+        },
+        "short_name": {
+            "en_US": "World",
+            "ja_JP": "スメーシー"
+        },
+        "area": 3044,
+        "release_at": {
+            "time": 1662649200,
+            "iso8601": "2022-09-08T15:00:00+00:00"
+        }
+    },
+    {
+        "key": "hirame",
+        "aliases": [
+            "flounder_heights",
+            "heights",
+            "9"
+        ],
+        "name": {
+            "en_US": "Flounder Heights",
+            "ja_JP": "ヒラメが丘団地"
+        },
+        "short_name": {
+            "en_US": "Heights",
+            "ja_JP": "ヒラメ"
+        },
+        "area": 2591,
+        "release_at": {
+            "time": 1669852800,
+            "iso8601": "2022-12-01T00:00:00+00:00"
+        }
+    },
+    {
+        "key": "kusaya",
+        "aliases": [
+            "brinewater_springs",
+            "springs",
+            "7"
+        ],
+        "name": {
+            "en_US": "Brinewater Springs",
+            "ja_JP": "クサヤ温泉"
+        },
+        "short_name": {
+            "en_US": "Springs",
+            "ja_JP": "クサヤ"
+        },
+        "area": 2045,
+        "release_at": {
+            "time": 1669852800,
+            "iso8601": "2022-12-01T00:00:00+00:00"
+        }
+    },
+    {
+        "key": "manta",
+        "aliases": [
+            "manta_maria",
+            "18"
+        ],
+        "name": {
+            "en_US": "Manta Maria",
+            "ja_JP": "マンタマリア号"
+        },
+        "short_name": {
+            "en_US": "Manta",
+            "ja_JP": "マンタ"
+        },
+        "area": 2765,
+        "release_at": {
+            "time": 1677628800,
+            "iso8601": "2023-03-01T00:00:00+00:00"
+        }
+    },
+    {
+        "key": "nampla",
+        "aliases": [
+            "umami_ruins",
+            "5",
+            "ruins"
+        ],
+        "name": {
+            "en_US": "Um'ami Ruins",
+            "ja_JP": "ナンプラー遺跡"
+        },
+        "short_name": {
+            "en_US": "Ruins",
+            "ja_JP": "ナンプラー"
+        },
+        "area": 2020,
+        "release_at": {
+            "time": 1677628800,
+            "iso8601": "2023-03-01T00:00:00+00:00"
+        }
+    },
+    {
+        "key": "taraport",
+        "aliases": [
+            "barnacle_and_dime",
+            "b_and_d",
+            "8"
+        ],
+        "name": {
+            "en_US": "Barnacle & Dime",
+            "ja_JP": "タラポートショッピングパーク"
+        },
+        "short_name": {
+            "en_US": "B&D",
+            "ja_JP": "タラポート"
+        },
+        "area": 2274,
+        "release_at": {
+            "time": 1685577600,
+            "iso8601": "2023-06-01T00:00:00+00:00"
+        }
+    },
+    {
+        "key": "kombu",
+        "aliases": [
+            "combu",
+            "humpback_pump_track",
+            "track",
+            "17"
+        ],
+        "name": {
+            "en_US": "Humpback Pump Track",
+            "ja_JP": "コンブトラック"
+        },
+        "short_name": {
+            "en_US": "Track",
+            "ja_JP": "コンブ"
+        },
+        "area": 2326,
+        "release_at": {
+            "time": 1685577600,
+            "iso8601": "2023-06-01T00:00:00+00:00"
+        }
+    }
+]
