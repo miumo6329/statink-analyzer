@@ -255,13 +255,13 @@ def weapon_use_rate(df, lobby, mode, weapon_list, save_dir):
     return df_weapon_use_rate
 
 
-def average_xpower_per_weapon(df, lobby, mode, weapon_list, save_dir):
+def average_power_per_weapon(df, lobby, mode, weapon_list, save_dir):
     df_xmatch = df[df['lobby'] == lobby.name]
     df_xmatch = df_xmatch[df_xmatch['mode'] == mode.name]
     df_ = preprocess_df(df_xmatch)
 
     # ブキ毎の平均XパワーのDataFrameを作成
-    columns = ['key', 'weapon', 'average_xpower', 'average_xpower_std', 'average_xpower_sem']
+    columns = ['key', 'weapon', 'average_power', 'average_power_std', 'average_power_sem']
     df_ave_power = pd.DataFrame(columns=columns)
     for weapon in weapon_list:
         df_weapon = df_[df_['weapon'] == weapon.key]
@@ -273,17 +273,17 @@ def average_xpower_per_weapon(df, lobby, mode, weapon_list, save_dir):
         df_ave_power = pd.concat([df_ave_power, df_temp])
 
     # 昇順にソート
-    df_ave_power = df_ave_power.sort_values('average_xpower', ascending=True)
+    df_ave_power = df_ave_power.sort_values('average_power', ascending=True)
     print(df_ave_power)
 
     # プロット
     fig = plt.figure(figsize=(10, 30), dpi=300)
     ax = fig.add_subplot(1, 1, 1)
-    ax.errorbar(df_ave_power['average_xpower'], df_ave_power['weapon'], xerr=df_ave_power['average_xpower_sem'],
+    ax.errorbar(df_ave_power['average_power'], df_ave_power['weapon'], xerr=df_ave_power['average_power_sem'],
                 capsize=4, fmt='o', ecolor='red', color='black')
     ax.grid(axis='y')
     ax.tick_params(axis='y', pad=25)
-    ax.set_xlim([1800, 2300])
+    ax.set_xlim([df_ave_power['average_power'].min()-100, df_ave_power['average_power'].max()+100])
     ax.set_ylim([-1, len(df_ave_power)])
     plt.subplots_adjust(left=0.5, right=0.95, bottom=0.1, top=0.95)
 
@@ -291,34 +291,34 @@ def average_xpower_per_weapon(df, lobby, mode, weapon_list, save_dir):
     i = 0
     for idx, row in df_ave_power.iterrows():
         img = plt.imread(DIR_WEAPON_IMAGES + row['key'] + '.png')
-        ab = AnnotationBbox(OffsetImage(img, zoom=0.09), (0, 0), xybox=(1785, i),
+        ab = AnnotationBbox(OffsetImage(img, zoom=0.09), (0, 0), xybox=(df_ave_power['average_power'].min()-115, i),
                             frameon=False, annotation_clip=False)
         ax.add_artist(ab)
         i += 1
 
     plt.tight_layout()
-    plt.savefig(save_dir + 'average_xpower.png')
+    plt.savefig(save_dir + 'average_power.png')
     return df_ave_power
 
 
-def weapon_deviation_value(df_use_rate, df_ave_xpower, save_dir):
+def weapon_deviation_value(df_use_rate, df_ave_power, save_dir):
 
-    df = pd.merge(df_use_rate, df_ave_xpower)
+    df = pd.merge(df_use_rate, df_ave_power)
 
     # プロット
     fig = plt.figure(figsize=(7, 7), dpi=300)
     ax = fig.add_subplot(1, 1, 1)
     ax.set_xlim([-0.5, 10])
-    ax.set_ylim([1800, 2300])
+    ax.set_ylim([df_ave_power['average_power'].min()-50, df_ave_power['average_power'].max()+50])
     for idx, row in df.iterrows():
         x = row['use_rate']
-        y = row['average_xpower']
+        y = row['average_power']
         img = plt.imread(DIR_WEAPON_IMAGES + row['key'] + '.png')
         ab = AnnotationBbox(OffsetImage(img, zoom=0.09), (0, 0), xybox=(x, y),
                             frameon=False, annotation_clip=False)
         ax.add_artist(ab)
     plt.tight_layout()
-    plt.savefig(save_dir + 'weapon_use_rate_ave_xpower.png')
+    plt.savefig(save_dir + 'weapon_use_rate_ave_power.png')
 
     # ブキ使用率をBox-Cox変換
     print(df['use_rate'].tolist())
@@ -327,9 +327,9 @@ def weapon_deviation_value(df_use_rate, df_ave_xpower, save_dir):
 
     # 標準化(平均0, 分散1)
     zscore_use_rate = zscore(df['use_rate'].tolist())
-    zscore_ave_xpower = zscore(df['average_xpower'].tolist())
+    zscore_ave_power = zscore(df['average_power'].tolist())
     df = df.assign(use_rate=zscore_use_rate)
-    df = df.assign(average_xpower=zscore_ave_xpower)
+    df = df.assign(average_power=zscore_ave_power)
 
     # プロット
     fig = plt.figure(figsize=(7, 7), dpi=300)
@@ -338,18 +338,18 @@ def weapon_deviation_value(df_use_rate, df_ave_xpower, save_dir):
     ax.set_ylim([-3, 3])
     for idx, row in df.iterrows():
         x = row['use_rate']
-        y = row['average_xpower']
+        y = row['average_power']
         img = plt.imread(DIR_WEAPON_IMAGES + row['key'] + '.png')
         ab = AnnotationBbox(OffsetImage(img, zoom=0.09), (0, 0), xybox=(x, y),
                             frameon=False, annotation_clip=False)
         ax.add_artist(ab)
     plt.tight_layout()
-    plt.savefig(save_dir + 'weapon_use_rate_ave_xpower_standardization.png')
+    plt.savefig(save_dir + 'weapon_use_rate_ave_power_standardization.png')
 
     # ブキ使用率、平均Xパワーを直交射影しスコア算出、標準化
     weapon_score = []
     for idx, row in df.iterrows():
-        value = orthogonal_projection(row['use_rate'], row['average_xpower'], 0.9)
+        value = orthogonal_projection(row['use_rate'], row['average_power'], 0.9)
         weapon_score.append(value[0]+value[1])
     weapon_score = zscore(weapon_score)
     df['score'] = weapon_score
@@ -370,7 +370,7 @@ def weapon_deviation_value(df_use_rate, df_ave_xpower, save_dir):
     barh = ax.barh(df['weapon'], df['deviation_value'], color=color, alpha=0.0)
     ax.bar_label(barh, labels=df['deviation_value'].apply(lambda x: round(x, 2)), padding=15)
     ax.grid(axis='y')
-    ax.set_xlim([25, 75])
+    ax.set_xlim([df['deviation_value'].min()-5, df['deviation_value'].max()+5])
     ax.set_ylim([-1, len(df)])
     plt.subplots_adjust(left=0.5, right=0.95, bottom=0.1, top=0.95)
 
@@ -422,9 +422,9 @@ def analyze(dt_start, dt_end, lobby, mode):
     df_win_rate = weapon_win_rate(df, lobby, mode, weapon_list, save_dir)
     df_use_rate = weapon_use_rate(df, lobby, mode, weapon_list, save_dir)
 
-    if lobby == Lobby.xmatch:
-        df_ave_xpower = average_xpower_per_weapon(df, lobby, mode, weapon_list, save_dir)
-        weapon_deviation_value(df_use_rate, df_ave_xpower, save_dir)
+    if lobby == Lobby.xmatch or lobby == Lobby.splatfest_challenge:
+        df_ave_power = average_power_per_weapon(df, lobby, mode, weapon_list, save_dir)
+        weapon_deviation_value(df_use_rate, df_ave_power, save_dir)
 
 
 def main():
