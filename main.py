@@ -6,8 +6,8 @@ from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import seaborn as sns
 from scipy.stats import boxcox, zscore
 from utils import generate_gradient, orthogonal_projection
-from weapon_info import weapon_dict
-from enums import Lobby, Mode
+from weapon_info import get_weapon_list_by_season
+from enums import Lobby, Mode, Season
 
 
 DIR_BATTLE_RESULTS = 'battle-results-csv\\'
@@ -148,7 +148,7 @@ def preprocess_df(df):
     return df_result
 
 
-def weapon_win_rate(df, lobby, mode, save_dir):
+def weapon_win_rate(df, lobby, mode, weapon_list, save_dir):
     df_xmatch = df[df['lobby'] == lobby.name]
     df_xmatch = df_xmatch[df_xmatch['mode'] == mode.name]
     df_ = preprocess_df(df_xmatch)
@@ -156,13 +156,13 @@ def weapon_win_rate(df, lobby, mode, save_dir):
     # ブキ毎の勝率のDataFrameを作成
     columns = ['key', 'weapon', 'win_rate', 'win_rate_std', 'win_rate_sem', 'battle_count']
     df_win_rate = pd.DataFrame(columns=columns)
-    for key, value in weapon_dict.items():
-        df_weapon = df_[df_['weapon'] == key]
+    for weapon in weapon_list:
+        df_weapon = df_[df_['weapon'] == weapon.key]
         mean = df_weapon['win'].mean() * 100  # [%]
         std = df_weapon['win'].std() * 100
         sem = df_weapon['win'].sem() * 100
         count = len(df_weapon)
-        df_temp = pd.DataFrame([[key, value, mean, std, sem, count]], columns=columns)
+        df_temp = pd.DataFrame([[weapon.key, weapon.name, mean, std, sem, count]], columns=columns)
         df_win_rate = pd.concat([df_win_rate, df_temp])
 
     # 昇順にソート
@@ -212,7 +212,7 @@ def weapon_win_rate(df, lobby, mode, save_dir):
     return df_win_rate
 
 
-def weapon_use_rate(df, lobby, mode, save_dir):
+def weapon_use_rate(df, lobby, mode, weapon_list, save_dir):
     df_xmatch = df[df['lobby'] == lobby.name]
     df_xmatch = df_xmatch[df_xmatch['mode'] == mode.name]
     df_weapon = preprocess_df(df_xmatch)
@@ -220,9 +220,9 @@ def weapon_use_rate(df, lobby, mode, save_dir):
     # ブキ使用率のDataFrameを作成
     columns = ['key', 'weapon', 'use_rate']
     df_weapon_use_rate = pd.DataFrame(columns=columns)
-    for key, value in weapon_dict.items():
-        use_rate = (df_weapon['weapon'] == key).mean() * 100  # [%]
-        df_temp = pd.DataFrame([[key, value, use_rate]], columns=columns)
+    for weapon in weapon_list:
+        use_rate = (df_weapon['weapon'] == weapon.key).mean() * 100  # [%]
+        df_temp = pd.DataFrame([[weapon.key, weapon.name, use_rate]], columns=columns)
         df_weapon_use_rate = pd.concat([df_weapon_use_rate, df_temp])
 
     # 昇順にソート
@@ -255,7 +255,7 @@ def weapon_use_rate(df, lobby, mode, save_dir):
     return df_weapon_use_rate
 
 
-def average_xpower_per_weapon(df, lobby, mode, save_dir):
+def average_xpower_per_weapon(df, lobby, mode, weapon_list, save_dir):
     df_xmatch = df[df['lobby'] == lobby.name]
     df_xmatch = df_xmatch[df_xmatch['mode'] == mode.name]
     df_ = preprocess_df(df_xmatch)
@@ -263,13 +263,13 @@ def average_xpower_per_weapon(df, lobby, mode, save_dir):
     # ブキ毎の平均XパワーのDataFrameを作成
     columns = ['key', 'weapon', 'average_xpower', 'average_xpower_std', 'average_xpower_sem']
     df_ave_power = pd.DataFrame(columns=columns)
-    for key, value in weapon_dict.items():
-        df_weapon = df_[df_['weapon'] == key]
+    for weapon in weapon_list:
+        df_weapon = df_[df_['weapon'] == weapon.key]
         # print(value, df_weapon['power'].describe())
         mean = df_weapon['power'].mean()
         std = df_weapon['power'].std()
         sem = df_weapon['power'].sem()
-        df_temp = pd.DataFrame([[key, value, mean, std, sem]], columns=columns)
+        df_temp = pd.DataFrame([[weapon.key, weapon.name, mean, std, sem]], columns=columns)
         df_ave_power = pd.concat([df_ave_power, df_temp])
 
     # 昇順にソート
@@ -386,6 +386,20 @@ def weapon_deviation_value(df_use_rate, df_ave_xpower, save_dir):
     plt.savefig(save_dir + 'weapon_deviation_value.png')
 
 
+def check_season(df):
+    season_list = df['# season'].unique()
+    if len(season_list) >= 2:
+        print('対象期間に複数のシーズンが含まれます。期間内の最新シーズンのブキ情報を基に統計情報を出力します。')
+
+    # Enumの定数名に変換 ex) 'Drizzle Season 2022' -> 'drizzle_2022'
+    season_list = [season.replace(' Season ', '_') for season in season_list]
+    season_list = [season.lower() for season in season_list]
+    season_list = [Season[season] for season in season_list]
+
+    season = max(season_list)
+    return season
+
+
 def analyze(dt_start, dt_end, lobby, mode):
     save_dir = dt_start.strftime('%Y%m%d') + '-' + dt_end.strftime('%Y%m%d') + \
                '-' + lobby.name + '-' + mode.name + '\\'
@@ -393,6 +407,9 @@ def analyze(dt_start, dt_end, lobby, mode):
         os.makedirs(save_dir)
 
     df = load_battle_result(dt_start, dt_end)
+
+    season = check_season(df)
+    weapon_list = get_weapon_list_by_season(season)
 
     # 各解析グラフ作成
     if lobby == Lobby.xmatch or lobby == Lobby.bankara_challenge or lobby == Lobby.bankara_open:
@@ -402,11 +419,11 @@ def analyze(dt_start, dt_end, lobby, mode):
         # TODO: modesで指定したルールでフィルタリング
         histogram_xpower(df, lobby, [Mode.area, Mode.yagura, Mode.hoko, Mode.asari], save_dir)
 
-    df_win_rate = weapon_win_rate(df, lobby, mode, save_dir)
-    df_use_rate = weapon_use_rate(df, lobby, mode, save_dir)
+    df_win_rate = weapon_win_rate(df, lobby, mode, weapon_list, save_dir)
+    df_use_rate = weapon_use_rate(df, lobby, mode, weapon_list, save_dir)
 
     if lobby == Lobby.xmatch:
-        df_ave_xpower = average_xpower_per_weapon(df, lobby, mode, save_dir)
+        df_ave_xpower = average_xpower_per_weapon(df, lobby, mode, weapon_list, save_dir)
         weapon_deviation_value(df_use_rate, df_ave_xpower, save_dir)
 
 
